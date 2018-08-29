@@ -1,0 +1,84 @@
+★★★tomcat7.0 설치(on ubuntu)★★★
+
+Installing Tomcat 7
+Step 1: Create the Tomcat Folder
+
+Logged in as root, within the opt folder make a directory called tomcat 
+and cd into that folder after completion.
+
+디렉토리 만들기:mkdir /opt/tomcat
+
+이동:cd /opt/tomcat
+
+ 
+
+Step 2: Install Tomcat Through Wget
+
+Click this link to the Apache Tomcat 7 Download site.
+ Place your cursor under 7.0.90 Binary Distributions, 
+right click on the tar.gz file and select Copy Link Address (as shown in the picture below).  
+At the time of this article Tomcat 7 is the newest version but feel free to pick 
+whatever version is more up-to-date.
+
+버전확인:Tomcat Version 7.0.90
+
+Next, from your server, use wget command to download the tar 
+to  the tomcat folder from the URL you copied in the previous step:
+
+사이트불러오기:wget http://www.trieuvan.com/apache/tomcat/tomcat-7/v7.0.90/bin/apache-tomcat-7.0.90.tar.gz
+
+압축풀기:tar xvzf apache-tomcat-7.0.90.tar.gz
+
+You will end up with a file called apache-tomcat-7.0.90.
+
+ 
+
+Step 3: Install Java
+
+Before you can use Tomcat, you’ll have to install the Java Development Kit (JDK). 
+Beforehand, check to see if Java is installed:
+
+자바버전: java -version
+
+If that command returns the following message then Java has yet to be installed:
+The program 'java' can be found in the following packages:
+
+To install Java, simply run the following command (and at the prompt enter Y to continue:
+apt-get install default-jdk
+rm
+ 
+
+Step 4: Configure .bashrc file
+
+Set the environment variables in .bashrc with the following command:
+
+빔설치: vim ~/.bashrc
+
+Add this information to the end of the file:
+
+하기 두줄 마지막에 추가:
+export JAVA_HOME=/usr/lib/jvm/jdk1.6.0_45
+export CATALINA_HOME=/opt/tomcat/apache-tomcat-7.0.90
+
+
+vim변경내용적용
+. ~/.bashrc
+
+ 
+
+Step 5: Test Run
+/
+실행명령어:
+$CATALINA_HOME/bin/startup.sh
+
+
+실행내용:
+You should get a result similar to:
+Using CATALINA_BASE: /opt/tomcat
+Using CATALINA_HOME: /opt/tomcat
+Using CATALINA_TMPDIR: /opt/tomcat/temp
+Using JRE_HOME: /usr/lib/jvm/java-7-openjdk-amd64/
+Using CLASSPATH: /opt/tomcat/bin/bootstrap.jar:/opt/tomcat/bin/tomcat-juli.jar
+Tomcat started.
+
+웹에서 localhost:8080 (for test in a web browser)
