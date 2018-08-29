@@ -1,0 +1,50 @@
+# company
+
+★★★java 1.6 설치 (ubuntu)★★★
+
+Oracle JDK 를 Download 한다.
+JDK 1.6 Download
+참고로 JDK 와 JRE 와의 관계는 JDK 를 설치하면 JRE 는 깔려있다.
+JRE 는 Java Application 을 구동하기위한 최소한의 Runtime Environment 이고, JDK 는 Java Application 을 개발하기 위한 JRE 를 포함한 Development Kit 이다.
+JRE 1.6 Download
+JDK 를 다운받은 폴더로 이동하여 실행 권한을 준다.
+ $ sudo chmod +x jdk-6u38-linux-i586.bin
+
+JDK 파일을 실행하여 압축을 푼다.
+ $ ./jdk-6u38-linux-i586.bin
+
+JDK 압축이 끝나면 다음과 같이 JDK 압축이 풀린 jdk1.6.0_38 이란 폴더가 생긴다.
+
+생성된 폴더를 /usr/lib/jvm 폴더로 이동시킨다.
+ $ sudo mv jdk1.6.0_38/ /usr/lib/jvm/
+
+시스템내에서 자바를 설치한다.
+ $ sudo update-alternatives --install /usr/bin/javac javac /usr/lib/jvm/jdk1.6.0_38/bin/javac 1
+
+ $ sudo update-alternatives --install /usr/bin/java java /usr/lib/jvm/jdk1.6.0_38/bin/java 1
+
+ $ sudo update-alternatives --install /usr/bin/javaws javaws /usr/lib/jvm/jdk1.6.0_38/bin/javaws 1
+설치한 자바가 Default 설정이 되도록 다음과 같이 설정한다.
+ $ sudo update-alternatives --config javac
+
+ $ sudo update-alternatives --config java
+
+ $ sudo update-alternatives --config javaws
+
+설치된 자바의 버전을 확인한다.
+
+ $ java -version
+
+
+Java Path 를 설정하기 위해서 home 에 있는 .bashrc 파일을 수정한다.
+ $ vi .bashrc
+
+다음 구문을 추가.
+ export JAVA_HOME=/path/your/jdk
+
+ export PATH=$JAVA_HOME/bin:$PATH
+
+
+
+★오픈 jdk 삭제방법:★
+sudo apt-get purge openjdk*
