@@ -1,0 +1,115 @@
+★★★mysql5.5설치 (on ubuntu)★★★
+
+Installing MySQL mysql-5.5.56 on Ubuntu 16.04
+
+1. Uninstall any existing version of MySql
+
+sudo rm /var/lib/mysql/ -R
+
+2. Delete the MySql profile
+
+sudo rm /etc/mysql/ -R
+
+3. Automatically uninstall mysql
+
+sudo apt-get autoremove mysql* --purge
+
+sudo apt-get remove apparmor
+
+**4. Download version 5.5.51 from MySql site
+
+wget https://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.56-linux-glibc2.5-x86_64.tar.gz
+
+Add ‘mysql’ user group**
+sudo groupadd mysql
+
+
+6. Add mysql ( not the current user ) to add mysql user group
+
+sudo useradd -g  mysql mysql
+
+7. Extract mysql-5.5.56-linux-glibc2.5-x86_64.tar.gz to / usr / local into the / usr / local
+
+cd /usr/local
+
+sudo tar -xvf mysql-5.5.56-linux-glibc2.5-x86_64.tar.gz
+
+8. Create mysql folder in usr/local
+ls
+sudo mv mysql-5.5.56-linux-glibc2.5-x86_64 mysql
+
+9. Set mysql directory owner and user group
+
+cd mysql
+
+sudo chown -R mysql:mysql *
+
+10. Install the required lib package
+
+sudo apt-get install libaio1
+
+11. Execute mysql installation script
+
+sudo scripts/mysql_install_db --user=mysql
+
+12. Set mysql directory owner from outside the mysql directory
+
+sudo chown -R root .
+
+13 Set data directory owner from inside mysql directory
+
+sudo chown -R mysql data
+
+14. Copy the mysql configuration file
+
+sudo cp support-files/my-medium.cnf /etc/my.cnf
+
+15 Start mysql
+
+sudo bin/mysqld_safe --user=mysql &
+
+sudo cp support-files/mysql.server /etc/init.d/mysqld
+
+sudo ln -s /usr/local/mysql/bin/mysql /usr/local/bin/mysql
+
+16 Initialize root user password
+
+sudo bin/mysqladmin -u root password '111111'
+
+17. Copy mysqld.service to /etc/systemd/system
+wget https://gist.github.com/kewogc/cb22f61975da08678df585dfbb9f6a8d/raw/3c0b120c4275afe48bb96236edb07fe7b823699e/mysqld.service 
+mv mysqld.service /etc/systemd/system/
+
+18. Start mysql server
+
+sudo /etc/init.d/mysqld start
+
+19. Stop mysql server
+/
+sudo /etc/init.d/mysqld stop
+
+20. Check status of mysql
+
+sudo /etc/init.d/mysqld status
+
+21. Enable myql on startup
+
+sudo update-rc.d -f mysqld defaults
+
+22. Disable mysql on startup (Optional)
+
+sudo update-rc.d -f mysqld remove
+
+23. Now directly use the command below to start mysql
+
+IF there have error like this:
+error 2002 (hy000) can't connect to local mysql server through socket '/tmp/mysql.sock' (2)
+
+then you can try:
+chmod 777 /usr/local/mysql
+service mysql restart
+
+and try again
+mysql -u root -p
+
+--end --
