@@ -1,0 +1,33 @@
+Windows MySQL 64bit 설치(5.7)
+
+->site: http://www.mysql.com
+
+->mysql community server(zip archive)
+  다운받은후 원하는 위치에 이동 및 압축풀기
+
+->환경변수 설정
+ 시스템변수-Path-편집-C:\mysql\bin 추가하기
+
+->mysql폴더의 my-defalut.ini파일이름을 my.ini로 변경후 아래와 같이 편집(없는경우는 다음)
+ [mysqld]
+ basedir=C:/mysql/
+ datadir=C:/mysql/data
+ port=3306 
+
+->mysql 안에 data폴더를 생성
+
+->cmd를 관리자권한으로 실행
+  ⓐcd (mysql/bin까지 경로)
+  ⓑmysqld --install
+  ⓒmysqld --initialize (mysql/data폴더에 desk.err 문서 생성)
+  ⓓerr문서의 마지막 root@localhost: **** (여기서 ****를 복사)
+  ⓔ컴퓨터관리-서비스및 응용프로그램-서비스-mysql을 시작
+  ⓕmyslqd
+    mysql -u root -p (복사된 ****비밀번호paste)
+  ⓖmysql 실행화면에서 
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '1234';로 변경하면 끝
+
+
+
+tomcat 환경변수 : 시스템 변수 -> CATALINA_HOME  /  경로
+		  Path: bin까지 경로 추가
