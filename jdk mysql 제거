@@ -1,0 +1,12 @@
+jdk 삭제
+
+$ sudo update-alternatives --remove "java" "/usr/lib/jvm/jdk1.7.0_45/bin/java" 
+$ sudo update-alternatives --remove "javac" "/usr/lib/jvm/jdk1.7.0_45/bin/javac" 
+$ sudo update-alternatives --remove "javaws" 
+$ sudo rm -r /usr/lib/jvm/jdk1.7.0_45/
+
+mysql 제거
+
+ sudo apt-get purge mysql*
+ sudo apt-get autoremove
+ sudo apt-get autoclean
