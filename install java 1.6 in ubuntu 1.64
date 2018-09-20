@@ -48,3 +48,15 @@ Java Path 를 설정하기 위해서 home 에 있는 .bashrc 파일을 수정한
 
 ★오픈 jdk 삭제방법:★
 sudo apt-get purge openjdk*
+
+★오픈 jdk 설치방법:
+sudo apt-get install openjdk-8-jdk
+
+환경변수 설정:
+#javac -version
+
+#which javac
+/usr/bin/javac
+#readlink -f /usr/bin/javac
+/usr/lib/jvm/java8-openjdk-amd...
+JAVA_HOME = /usr/lib/jvm/java8-openjdk-amd...
