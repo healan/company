@@ -5,6 +5,16 @@ $ sudo update-alternatives --remove "javac" "/usr/lib/jvm/jdk1.7.0_45/bin/javac"
 $ sudo update-alternatives --remove "javaws" 
 $ sudo rm -r /usr/lib/jvm/jdk1.7.0_45/
 
+openjdk-java 시리즈.
+sudo apt-get remove openjdk*
+
+oracle-java시리즈
+sudo apt-get remove oracle*
+
+그리고 클린
+
+sudo apt-get autoremove--purge
+sudo apt-get autoclean
 mysql 제거
 
  sudo apt-get purge mysql*
