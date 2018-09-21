@@ -1,0 +1,6 @@
+
+* 포트번호 변경 확인
+
+① /home/dqcat/serverManager vi serverManagerSetting.xml (5005 → 2005 / 5555 → 2222)
+② /home/dqcat/servers/adminServer/setting vi serverList.xml (5555 → 2222)
+③ /home/dqcat/webManager/m2/include setting.jsp (5005 → 2005 / 5555 → 2222)
