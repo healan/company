@@ -1,0 +1,144 @@
+package javaparsing;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+public class Main { 
+	
+	private static URL url;
+	private static BufferedReader br;
+	private static HttpURLConnection con; 
+	
+	
+	
+	public static void main(String[] args) throws Exception{
+		
+		StringBuffer buffer = new StringBuffer();
+		DocumentBuilder builder;
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		Document doc = null;
+		
+		url= new URL("http://www.ciokorea.com/rss/feed/index.php"); 
+		
+		con =(HttpURLConnection) url.openConnection(); 
+		con.setRequestMethod("GET");
+		con.setRequestProperty("User-Agent", "Mozilla/5.0");
+		
+		br = new BufferedReader(new InputStreamReader(con.getInputStream(),"UTF-8"));
+		
+		String temp;
+		while((temp=br.readLine())!=null) {
+			
+			//System.out.println(temp);
+			buffer.append(temp+"\n");
+			
+		}
+	
+		//System.out.println(buffer.toString());
+		br.close(); 
+		
+		
+		//�Ľ��۾� ---------------------------------------------------------------------------------------------------------------
+		InputSource is = new InputSource(new StringReader(buffer.toString()));
+		builder = factory.newDocumentBuilder();
+		//System.out.println(is.toString());
+		doc = builder.parse(is);
+		//System.out.println(doc);
+		XPathFactory xpathFactory = XPathFactory.newInstance();
+		XPath xpath = xpathFactory.newXPath(); 
+		XPathExpression expr = xpath.compile("//rss/channel/item");
+		NodeList nodeList = (NodeList) expr.evaluate(doc, XPathConstants.NODESET);
+		for (int i =0; i<nodeList.getLength();i++) {
+			NodeList child = nodeList.item(i).getChildNodes();
+			for(int j=0; j<child.getLength();j++) {
+				Node node = child.item(j);
+				//System.out.println("���� ��� �̸�:" + node.getNodeName());
+				//System.out.println("���� ��� Ÿ��"+ node.getNodeType());
+				if(node.getNodeName().equals("link") || node.getNodeName().equals("title") || node.getNodeName().equals("description")) {
+				//System.out.println(node.getNodeName()+"/"+node.getTextContent());
+				}
+			}
+		}
+		//System.out.println(nodeList.getLength());
+		//�Ľ��۾�  ��---------------------------------------------------------------------------------------------------------------
+		
+		//�����ͻ���(jdbc) ---------------------------------------------------------------------------------------------------------------
+		 String URL="jdbc:mysql://127.0.0.1:3306/tb_collect_test?useUnicode=true&characterEncoding=utf8"; 
+		 String NAME="root"; 
+		 String PASSWORD="1234"; 
+		 String link =null;
+		 String title = null;
+		 String description = null;
+		//1. mysql ����̹� �ε�
+		
+		
+		Class.forName("com.mysql.jdbc.Driver");
+		
+		Connection conn = DriverManager.getConnection(URL,NAME,PASSWORD);
+		
+		PreparedStatement pstmt = conn.prepareStatement("insert into tb_collect_test (url, title,content) values (?,?,?) ");
+		System.out.println(conn); // ���� ok
+
+		for (int i =0; i<nodeList.getLength();i++) {
+			NodeList child = nodeList.item(i).getChildNodes();
+			for(int j=0; j<child.getLength();j++) {
+				Node node = child.item(j);
+				//System.out.println("���� ��� �̸�:" + node.getNodeName());
+				//System.out.println("���� ��� Ÿ��"+ node.getNodeType());
+				//if(node.getNodeName().equals("link") || node.getNodeName().equals("title") || node.getNodeName().equals("description")) {
+				//System.out.println(node.getNodeName()+"/"+node.getTextContent());
+				//}
+				if(node.getNodeName().equals("link")) {
+					link = node.getTextContent();
+				};
+				
+				if(node.getNodeName().equals("title")) {
+					title = node.getTextContent();
+				};
+				
+				if(node.getNodeName().equals("description")) {
+					description = node.getTextContent();
+				};
+				
+			}
+			pstmt.setString(1, link);
+			pstmt.setString(2, title);
+			pstmt.setString(3, description);
+			
+			pstmt.executeUpdate();
+			
+				
+		}
+				
+		
+		pstmt.close();
+		conn.close();
+		
+		
+		
+		//�����ͻ��� ��(jdbc) ---------------------------------------------------------------------------------------------------------------
+
+	}
+	
+
+}
+
