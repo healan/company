@@ -1,0 +1,121 @@
+package itnews;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.StringReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+
+public class MainClass1 {
+	
+	private static URL url;
+	private static BufferedReader br; //입력스트림 in에 대해 디폴트크기의 내부버퍼를 갖는 객체생성
+	private static HttpURLConnection con; //url 요청후 응답받기 (get, post방식)
+	
+	public static void main(String[] args) throws Exception {
+		
+		StringBuffer buffer = new StringBuffer();
+		DocumentBuilder builder; //dom파서 객체의 클래스
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance(); //documentbuilder를 생성시키는 factory클래스
+		factory.setNamespaceAware(true); //한 element가 속해 있는 namespace, 소속개념
+		Document doc = null; //xml문서 자체
+		
+		url = new URL("http://www.zdnet.co.kr/Include2/ZDNetKorea_News.xml");
+		
+		con = (HttpURLConnection) url.openConnection(); //웹페이지url연결
+		con.setRequestMethod("GET"); //요청방식선택
+		con.setRequestProperty("User-Agent","Mozilla/5.0"); //user-agent값 설정
+		
+		br = new BufferedReader(new InputStreamReader(con.getInputStream(),"UTF-8"));
+		
+		String temp;
+		while((temp=br.readLine())!=null) { //가져온 문서를 한줄씩 읽어
+			buffer.append(temp+"\n"); //buffer에 담기
+		}
+		//System.out.println(buffer); //전체데이터를 가지고 있음
+		br.close(); //담고 닫아주기
+		
+		//파싱 시작
+		InputSource is =new InputSource(new StringReader(buffer.toString()));//is: org.xml.sax.InputSource@13a57a3b
+		builder = factory.newDocumentBuilder(); //builder:com.sun.org.apache.xerces.internal.jaxp.DocumentBuilderImpl@7ca48474
+		doc = builder.parse(is); //[#document: null]
+		
+		XPathFactory xpathFactory = XPathFactory.newInstance(); //xpath는  xml노드들을 css다루듯이 쉽게 다루도록 도와주는 API
+		XPath xpath = xpathFactory.newXPath();
+		XPathExpression expr = xpath.compile("//rss/channel/item"); //expr:com.sun.org.apache.xpath.internal.jaxp.XPathExpressionImpl@7ca48474
+		
+		NodeList nodeList = (NodeList) expr.evaluate(doc,XPathConstants.NODESET);
+		for (int i =0; i<nodeList.getLength(); i++) {
+			NodeList child = nodeList.item(i).getChildNodes();
+			for(int j=0; j<child.getLength();j++) {
+				Node node = child.item(j);
+				
+				if(node.getNodeName().equals("link") || node.getNodeName().equals("title") || node.getNodeName().equals("description")) {
+					
+				}
+			}
+		}
+		//파싱 end
+		
+		//db에 데이터 넣기
+		String URL = "jdbc:mariadb://127.0.0.1:3306/newscollect";
+		String NAME = "root";
+		String PASSWORD = "1234";
+		String link = null;
+		String title = null;
+		String description = null;
+		
+		Class.forName("org.mariadb.jdbc.Driver"); //드라이버 load
+		
+		Connection conn = DriverManager.getConnection(URL,NAME,PASSWORD);//org.mariadb.jdbc.MariaDbConnection@6500df86
+		
+		PreparedStatement pstmt = conn.prepareStatement("insert into newscollect (link, title,description) values (?,?,?)");
+		
+		for (int i =0; i<nodeList.getLength();i++) {
+			
+			NodeList child = nodeList.item(i).getChildNodes();
+			for (int j=0; j<child.getLength();j++) {
+				Node node = child.item(j);
+				
+				if(node.getNodeName().equals("link")) {
+					link = node.getTextContent();
+				};
+				
+				if(node.getNodeName().equals("title")) {
+					title = node.getTextContent();
+				};
+				
+				if(node.getNodeName().equals("description")) {
+					description = node.getTextContent();
+				};
+			}
+			
+			pstmt.setString(1, link);
+			pstmt.setString(2, title);
+			pstmt.setString(3, description);
+			
+			pstmt.executeUpdate();
+		}
+		
+		pstmt.close();
+		pstmt.close();
+		
+	}
+	
+
+}
